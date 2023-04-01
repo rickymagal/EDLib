@@ -1,0 +1,23 @@
+
+TLSE* tlse_cria(void);
+TLSE* tlse_insere_ini(Lista *l, int i);
+TLSE* lst_insere_fim(Lista* l, int elem);
+TLSE* lst_insere_fim_rec(Lista* l, int elem);
+TLSE* lst_retira_elem(Lista  *l, int v);
+TLSE* lst_busca(Lista *l, int v);
+TLSE* lst_busca_rec(Lista* l, int elem);
+TLSE* lst_insere_ordenado(Lista *l, int v);
+TLSE* lst_retira_elem_rec(Lista * l, int v);
+TLSE* lst_retira_pos(Lista* l, int pos);
+TLSE* retira_todas_oc (Lista* l, int elem);
+TLSE* lst_insere_ordenado_rec(Lista* l, int elem);
+TLSE* copia (Lista *l);
+TLSE* inverte(Lista* l);
+TLSE* desloca(Lista *l, int n);
+
+int lst_vazia(Lista * l);
+
+void lst_imprime(Lista *l);
+void lst_imprime_rec(Lista *l);
+void lst_libera(Lista *l);
+void inverte_modifica(Lista** l);
