@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include "TLSE.h"
 
-
 struct tlse {
-  int info;
+  data_type info;
   struct tlse* prox;
 };
+
 
 typedef struct tlse TLSE;
 
@@ -14,7 +14,7 @@ TLSE *  tlse_cria(void){
   return NULL;
 }
 
-TLSE * tlse_insere_ini(TLSE *l, int i){
+TLSE * tlse_insere_ini(TLSE *l, data_type i){
   TLSE * novo = (TLSE *)malloc(sizeof(TLSE));
   novo->info = i;
   novo->prox = l;
@@ -33,14 +33,14 @@ int tlse_vazia(TLSE *l){
   return(l==NULL);
 }
 
-TLSE * tlse_busca (TLSE * l, int v){
+TLSE * tlse_busca (TLSE * l, data_type v){
   TLSE* p;
   for(p=l;p!=NULL;p=p->prox)
     if(p->info == v) return p;
   return NULL;
 }
 
-TLSE * tlse_retira_elem(TLSE * l , int v){
+TLSE * tlse_retira_elem(TLSE * l , data_type v){
   TLSE *ant = NULL;
   TLSE * p = l;
   while(p!=NULL && p->info != v){
@@ -63,7 +63,7 @@ void tlse_libera(TLSE * l){
   }free(p);
 }
 
-TLSE *tlse_insere_ordenado(TLSE *l, int v){
+TLSE *tlse_insere_ordenado(TLSE *l, data_type v){
   TLSE* novo = tlse_insere_ini(NULL, v);
   TLSE* ant = NULL;
   TLSE* p = l;
@@ -90,7 +90,7 @@ void tlse_imprime_rec(TLSE *l){
   printf("----------------------------\n");
 }
 
-TLSE * tlse_retira_elem_rec(TLSE *l, int elem){
+TLSE * tlse_retira_elem_rec(TLSE *l, data_type elem){
   if(!l) return l;
   if(l->info == elem){
       TLSE *temp = l;
@@ -100,7 +100,7 @@ TLSE * tlse_retira_elem_rec(TLSE *l, int elem){
     return l;
 }
 
-TLSE* tlse_insere_fim(TLSE* l, int elem){
+TLSE* tlse_insere_fim(TLSE* l, data_type elem){
   if(!l) return tlse_insere_ini(l, elem);
   TLSE *p = l;
   while(p->prox) p = p->prox;
@@ -108,13 +108,13 @@ TLSE* tlse_insere_fim(TLSE* l, int elem){
   return l;
 }
 
-TLSE* tlse_insere_fim_rec(TLSE* l, int elem){
+TLSE* tlse_insere_fim_rec(TLSE* l, data_type elem){
   if (!l) return tlse_insere_ini(l,elem);
   l->prox = tlse_insere_fim_rec(l->prox, elem);
   return l;
 }
 
-TLSE* tlse_busca_rec(TLSE* l, int elem){
+TLSE* tlse_busca_rec(TLSE* l, data_type elem){
   if((!l) || (l->info == elem)) return l;
   return tlse_busca_rec(l->prox, elem);
 }
@@ -134,7 +134,7 @@ TLSE* tlse_retira_pos(TLSE* l, int pos){
   return l;
 }
 
-TLSE* retira_todas_oc(TLSE* l, int elem){
+TLSE* retira_todas_oc(TLSE* l, data_type elem){
   TLSE *p = l;
   TLSE * new = tlse_cria();
   while(p){
@@ -145,7 +145,7 @@ TLSE* retira_todas_oc(TLSE* l, int elem){
   return new;
 }
 
-TLSE* tlse_insere_ordenado_rec(TLSE* l, int elem){
+TLSE* tlse_insere_ordenado_rec(TLSE* l, data_type elem){
   if((!l) || (l->info >= elem)) return tlse_insere_ini(l,elem);
   l->prox = tlse_insere_ordenado_rec(l->prox,elem);
   return l;
