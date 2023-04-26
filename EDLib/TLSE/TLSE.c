@@ -21,12 +21,11 @@ TLSE * tlse_insere_ini(TLSE *l, data_type i){
   return novo;
 }
 
-void tlse_imprime(TLSE *l){
+void tlse_imprime(TLSE *l, void (*print_fn)(data_type)){
   if(tlse_vazia(l)) return;
   TLSE * p;
-  for(p=l;p!=NULL;p=p->prox)
-    printf("info = %d\n", p->info);
-   printf("----------------------------\n");
+  for(p=l;p!=NULL;p=p->prox) (*print_fn)(p->info);
+  printf("----------------------------\n");
 }
 
 int tlse_vazia(TLSE *l){
@@ -81,11 +80,11 @@ TLSE *tlse_insere_ordenado(TLSE *l, data_type v){
   return l;
 }
 
-void tlse_imprime_rec(TLSE *l){
+void tlse_imprime_rec(TLSE *l, void (*print_fn)(data_type)){
   if(tlse_vazia(l)) return;
   else{
-    printf("info = %d\n", l->info);
-    tlse_imprime_rec(l->prox);
+    (*print_fn)(l->info);
+    tlse_imprime_rec(l->prox, *print_fn);
   }
   printf("----------------------------\n");
 }
@@ -208,3 +207,41 @@ TLSE* desloca(TLSE *l, int n){
   return new;
 }
 
+void retira_todas_oc_modifica(TLSE **l, data_type val){
+  TLSE *ant = NULL;
+  TLSE * p = *l;
+  while(p){
+    if(p->info == val){
+      if(ant==NULL){
+	TLSE* aux = p;
+	*l = p->prox;
+	p=p->prox;
+	free(aux);
+      }else{
+	TLSE* aux = p;
+	ant->prox = p->prox;
+	p =  p->prox;
+	free(aux);
+      }
+    }else{
+      ant = p;
+      p = p->prox;
+    }
+  }
+}
+
+void tlse_concatena(TLSE **l, TLSE *m){
+  TLSE* p = *l;
+  TLSE* ant = NULL;
+  while(p){
+    ant = p;
+    p = p->prox;
+  }ant->prox = m;
+}
+
+data_type tlse_busca_pos(TLSE *l, int i){
+  TLSE* p;
+  int j;
+    for(p=l, j = 0;j< i;p=p->prox, j++){}
+    return p->info;
+}

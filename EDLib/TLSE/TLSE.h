@@ -19,7 +19,11 @@ TLSE* desloca(TLSE *l, int n);
 
 int tlse_vazia(TLSE * l);
 
-void tlse_imprime(TLSE *l);
-void tlse_imprime_rec(TLSE *l);
+data_type tlse_busca_pos(TLSE *l, int i);
+
+void tlse_imprime(TLSE *l, void (*print_fn)(data_type));
+void tlse_imprime_rec(TLSE *l, void (*print_fn)(data_type));
 void tlse_libera(TLSE *l);
 void inverte_modifica(TLSE** l);
+void tlse_concatena(TLSE **l, TLSE *m);
+void retira_todas_oc_modifica(TLSE **l, data_type val);
