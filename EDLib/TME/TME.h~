@@ -1,0 +1,39 @@
+#include "Cell.h"
+
+typedef struct{
+  Cell ** head_line;
+  Cell ** head_column;
+  int lines;
+  int columns;
+    } TME;
+
+//Cria uma lista de tamanho mxn
+TME * TME_create(int m, int n);
+//Imprime elementos nao nulos da matriz e sua posicao
+void TME_print_sparse(TME *t, void (*print_fn)(data_type));
+//Destroi matriz
+void TME_destroy(TME* t);
+//Retorna Elemento por posicao. Complexidade O(n), sendo n o maior entre o numero de colunas e o numero de linhas
+data_type TME_get(TME *t, Position position);
+//Imprime elementos em formato de matriz denso.
+void TME_print_dense(TME *t, void (*print_fn)(data_type));
+//Soma matrizes. Complexidade 0{n^2), pois no pior caso percorre n linhas, sendo n quantos elementos nao nulos possui.
+//TME* TME_sum(TME * t, TME * l);
+//Funcao auxiliar de insercao in-place. Complexidade O(n).
+void  TME_insert(TME** t, data_type value,Position position);
+
+TME * TME_multiply_scalar(TME *t, data_type scalar);
+
+TME * swap_column(TME*t, int c1, int c2);
+/*
+***** void TME_save_binary(TME*t);
+***** TME * TME_read_from_binary();
+TME * TME_multiply(TME *t, TME *l);
+TME *TME_multiply_point(TME*t,TME*l);
+TME* swap_line(TME*t, int l1, int l2);
+TME * swap_column(TME*t, int c1, int c2);
+TME * slicing(TME *t, Position ini, Position end);
+TME* transpose(TME*t);
+float convolution(TME*t, position Position,  TME* kernel);
+*/
+

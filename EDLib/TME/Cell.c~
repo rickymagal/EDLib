@@ -1,0 +1,15 @@
+#include "Cell.h"
+#include <stdlib.h>
+
+Cell * cell_create(data_type value, Position position, Cell *next_line, Cell *next_column){
+  Cell * new = (Cell*)malloc(sizeof(Cell));\
+  new->value = value;
+  new->position = position;
+  new->next_line = next_line;
+  new->next_column =  next_column;
+  return new;
+}
+
+void cell_destroy(Cell * c){
+  free(c);
+}

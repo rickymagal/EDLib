@@ -1,0 +1,182 @@
+#include "TME.h"
+#include <stdlib.h>
+#include <stdio.h>
+
+TME * TME_create(int m, int n){
+  TME* new = (TME*)malloc(sizeof(TME));
+  new->head_line = (Cell**)malloc(sizeof(Cell*)*n);
+  new->head_column = (Cell**)malloc(sizeof(Cell*)*m);
+  new->lines = n;
+  new->columns = m;
+  for(int i=0; i<m; i++) *(new->head_column + i) = NULL;
+  for(int i=0; i<n; i++) *(new->head_line + i) = NULL;
+  return new;
+}
+
+data_type  TME_get(TME *t, Position position){
+  if(t->columns<t->lines){
+    Cell *l = *(t->head_line+(position.line-1));
+    if(!l) return 0;
+    while(l){
+      if(l->position.column == position.column){
+	return l->value;
+      }l=l->next_line;
+    }return 0;
+  }else{
+    Cell *l = *(t->head_column+(position.column-1));
+    if(!l) return 0;
+    while(l){
+      if(l->position.line == position.line){
+	return l->value;
+      }l=l->next_column;
+    }return 0;
+  }
+}
+
+void TME_destroy(TME* t){
+  for(int i=0; i<t->columns;i++){
+    Cell*q;
+    Cell *p = *(t->head_line + i);
+    while(p!=NULL){
+      q = p;
+      p = p->next_line;
+      cell_destroy(q);
+      
+    }
+  }free(t);
+  
+}
+
+void TME_print_sparse(TME *t, void (*print_fn)(data_type)){
+  Cell *p;
+  for(int i=0;i<t->columns;i++){
+    for(p=*(t->head_line+i); p!=NULL;p=p->next_line){
+      (*print_fn)(p->value);
+      printf("(%d,%d)\n", (p->position).line, (p->position).column);
+    }
+  }
+}
+
+
+void TME_print_dense( TME *t, void (*print_fn)(data_type)){
+  Cell *p;
+  for(int i =0; i<t->columns;i++){
+    printf("| ");
+    p = *(t->head_line+i);
+    if(p==NULL){
+      for(int j=0; j<t->columns; j++) printf("%.6f ", 0);
+      printf("|\n");
+      continue;
+    }else{
+      int zeroes_before = 0;
+      int ant=0;
+      while(p){
+	zeroes_before = p->position.column - ant - 1;
+	for(int k=0; k<zeroes_before;k++) printf("%.6f ", 0);
+	ant = p->position.column;
+	(*print_fn)(p->value);
+	printf(" ");
+	p = p->next_line;
+      }
+      if(ant< t->columns){
+	for(int n=0; n<t->columns - ant; n++) printf("%.6f ", 0);
+      }
+    }printf("|\n");
+  }
+}
+
+void change(TME **t, data_type value, Position position){
+  Cell *p = *((*t)->head_line + position.line-1);
+  while(p->position.column < position.column){
+    p = p->next_line;
+  }p->value = value;
+}
+
+void TME_insert(TME** t, data_type value,Position position){
+  if (TME_get(*t, position)){
+    change(t, value, position);
+    return;
+  }
+  Cell * new = cell_create(value, position, NULL, NULL);
+  if (position.line > (*t)->lines || position.column > (*t)->columns || position.line <1 || position.column <1) return;
+  Cell ** line = ((*t)->head_line + position.line-1);
+  Cell ** column =((*t)->head_column + position.column-1);
+  if(!(*line)){
+      new->next_line = *line;
+      *line = new;
+  }else{
+    Cell * temp = *line;
+    Cell * ant = temp;
+    if(position.column< temp->position.column){
+      new->next_line = *line;
+      *line = new;
+      
+    }else{
+     while(temp && position.column > (temp)->position.column){
+        ant = temp;
+       temp = (temp)->next_line;
+     } new->next_line=temp;
+    ant->next_line = new;
+    }
+  }
+   if(!(*column)){
+      new->next_column = *column;
+      *column = new;
+  }else{
+    Cell * temp = *column;
+    Cell * ant = temp;
+    if(position.line< temp->position.line){
+      new->next_column = *column;
+      *column = new;
+      
+    }else{
+     while(temp && position.line > (temp)->position.line){
+        ant = temp;
+       temp = (temp)->next_column;
+     } new->next_column=temp;
+    ant->next_column = new;
+    }
+  }
+}
+
+TME* TME_copy(TME *t){
+  Cell *temp;
+  TME* new = TME_create(t->lines, t->columns);
+  for(int i=0; i<t->lines; i++){
+    temp = *(t->head_line +i);
+    while(temp){
+      TME_insert(&new, temp->value, temp->position);
+      temp = temp->next_line;
+    }
+  }return new;
+}
+
+TME* TME_sum(TME * t, TME * l){
+  if(t->columns != l->columns || t->lines != l->lines) return t;
+  Cell *T, *L;
+  TME *new = TME_copy(t);
+    for(int i=0; i<t->lines; i++){
+      T = *(t->head_line+i);
+      while(T){
+	L = *(l->head_line+i);
+	 while(L->position.column<= T->position.column){
+	   if(L->position.column == T->position.column) TME_insert(&new, L->value + T->value, T->position);
+	   else  TME_insert(&new, L->value, L->position);
+	   L = L->next_line;
+	 }
+	 T = T->next_line;
+      }
+    }return new;
+}
+
+TME * TME_multiply_scalar(TME *t, data_type scalar){
+  Cell *p;
+  TME *new  = TME_create(t->lines, t->columns);
+  for(int i=0; i<t->lines; i++){
+    p = *(t->head_line+i);
+    while(p){
+      TME_insert(&new, (p->value)*scalar, p->position);
+      p = p->next_line;
+    }
+  }return new;
+}
